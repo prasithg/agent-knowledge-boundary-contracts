@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-07-09T22:00:00Z",
+  "cases": [
+    {
+      "id": "valid_private_digest",
+      "expected_valid": true,
+      "expected_codes": [],
+      "contract": {
+        "sources": [
+          {"id": "notes", "enabled": true, "sensitivity": "private", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "notes", "slug": "weekly-plan", "observed_at": "2026-07-09T18:00:00Z", "expires_at": "2026-07-12T00:00:00Z"}
+        ],
+        "claims": [
+          {"id": "digest-1", "destination": "private", "evidence": [{"source_id": "notes", "slug": "weekly-plan"}]}
+        ]
+      }
+    },
+    {
+      "id": "valid_same_slug_across_sources",
+      "expected_valid": true,
+      "expected_codes": [],
+      "contract": {
+        "sources": [
+          {"id": "wiki-a", "enabled": true, "sensitivity": "public", "public_reuse": true},
+          {"id": "wiki-b", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [
+          {"source_id": "wiki-a", "slug": "agent-memory", "observed_at": "2026-07-09T18:00:00Z"},
+          {"source_id": "wiki-b", "slug": "agent-memory", "observed_at": "2026-07-09T19:00:00Z"}
+        ],
+        "claims": [
+          {"id": "public-1", "destination": "public", "evidence": [{"source_id": "wiki-b", "slug": "agent-memory"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_disabled_source_retained",
+      "expected_valid": false,
+      "expected_codes": ["disabled_source_item"],
+      "contract": {
+        "sources": [
+          {"id": "disabled-mail", "enabled": false, "sensitivity": "private", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "disabled-mail", "slug": "message-1", "observed_at": "2026-07-09T18:00:00Z"}
+        ],
+        "claims": []
+      }
+    },
+    {
+      "id": "invalid_same_source_duplicate_slug",
+      "expected_valid": false,
+      "expected_codes": ["duplicate_source_slug"],
+      "contract": {
+        "sources": [
+          {"id": "wiki", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [
+          {"source_id": "wiki", "slug": "agent-memory", "observed_at": "2026-07-09T18:00:00Z"},
+          {"source_id": "wiki", "slug": "agent-memory", "observed_at": "2026-07-09T19:00:00Z"}
+        ],
+        "claims": []
+      }
+    },
+    {
+      "id": "invalid_expired_digest_claim",
+      "expected_valid": false,
+      "expected_codes": ["stale_claim"],
+      "contract": {
+        "sources": [
+          {"id": "status", "enabled": true, "sensitivity": "internal", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "status", "slug": "deploy-state", "observed_at": "2026-07-08T18:00:00Z", "expires_at": "2026-07-09T20:00:00Z"}
+        ],
+        "claims": [
+          {"id": "digest-stale", "destination": "private", "evidence": [{"source_id": "status", "slug": "deploy-state"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_superseded_digest_claim",
+      "expected_valid": false,
+      "expected_codes": ["superseded_claim"],
+      "contract": {
+        "sources": [
+          {"id": "decisions", "enabled": true, "sensitivity": "internal", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "decisions", "slug": "model-choice-v1", "observed_at": "2026-07-08T18:00:00Z", "superseded_by": {"source_id": "decisions", "slug": "model-choice-v2"}},
+          {"source_id": "decisions", "slug": "model-choice-v2", "observed_at": "2026-07-09T18:00:00Z"}
+        ],
+        "claims": [
+          {"id": "digest-old", "destination": "private", "evidence": [{"source_id": "decisions", "slug": "model-choice-v1"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_public_export_private_source",
+      "expected_valid": false,
+      "expected_codes": ["public_export_denied"],
+      "contract": {
+        "sources": [
+          {"id": "private-notes", "enabled": true, "sensitivity": "private", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "private-notes", "slug": "draft-thought", "observed_at": "2026-07-09T18:00:00Z"}
+        ],
+        "claims": [
+          {"id": "post-1", "destination": "public", "evidence": [{"source_id": "private-notes", "slug": "draft-thought"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_unknown_evidence_reference",
+      "expected_valid": false,
+      "expected_codes": ["unknown_evidence_ref"],
+      "contract": {
+        "sources": [
+          {"id": "wiki", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [],
+        "claims": [
+          {"id": "digest-missing", "destination": "private", "evidence": [{"source_id": "wiki", "slug": "missing"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_duplicate_source_id",
+      "expected_valid": false,
+      "expected_codes": ["duplicate_source_id"],
+      "contract": {
+        "sources": [
+          {"id": "docs", "enabled": true, "sensitivity": "public", "public_reuse": true},
+          {"id": "docs", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [],
+        "claims": []
+      }
+    },
+    {
+      "id": "invalid_malformed_observed_at",
+      "expected_valid": false,
+      "expected_codes": ["invalid_timestamp"],
+      "contract": {
+        "sources": [
+          {"id": "docs", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [
+          {"source_id": "docs", "slug": "release-note", "observed_at": "not-a-timestamp"}
+        ],
+        "claims": []
+      }
+    },
+    {
+      "id": "invalid_destination",
+      "expected_valid": false,
+      "expected_codes": ["invalid_claim"],
+      "contract": {
+        "sources": [
+          {"id": "docs", "enabled": true, "sensitivity": "public", "public_reuse": true}
+        ],
+        "items": [
+          {"source_id": "docs", "slug": "release-note", "observed_at": "2026-07-09T18:00:00Z"}
+        ],
+        "claims": [
+          {"id": "claim-1", "destination": "partner", "evidence": [{"source_id": "docs", "slug": "release-note"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_public_export_without_reuse_permission",
+      "expected_valid": false,
+      "expected_codes": ["public_export_denied"],
+      "contract": {
+        "sources": [
+          {"id": "docs", "enabled": true, "sensitivity": "public", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "docs", "slug": "draft-release-note", "observed_at": "2026-07-09T18:00:00Z"}
+        ],
+        "claims": [
+          {"id": "claim-1", "destination": "public", "evidence": [{"source_id": "docs", "slug": "draft-release-note"}]}
+        ]
+      }
+    },
+    {
+      "id": "invalid_disabled_and_expired_evidence",
+      "expected_valid": false,
+      "expected_codes": ["disabled_source_item", "stale_claim"],
+      "contract": {
+        "sources": [
+          {"id": "status", "enabled": false, "sensitivity": "internal", "public_reuse": false}
+        ],
+        "items": [
+          {"source_id": "status", "slug": "deploy-state", "observed_at": "2026-07-08T18:00:00Z", "expires_at": "2026-07-09T20:00:00Z"}
+        ],
+        "claims": [
+          {"id": "claim-1", "destination": "private", "evidence": [{"source_id": "status", "slug": "deploy-state"}]}
+        ]
+      }
+    }
+  ]
+}

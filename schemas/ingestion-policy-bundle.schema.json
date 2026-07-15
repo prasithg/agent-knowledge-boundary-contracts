@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/prasithg/agent-knowledge-boundary-contracts/schemas/ingestion-policy-bundle.schema.json",
+  "title": "Agent knowledge ingestion policy fixture bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "as_of", "cases"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "as_of": {"type": "string", "format": "date-time"},
+    "cases": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/case"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "enabled", "sensitivity", "public_reuse"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "enabled": {"type": "boolean"},
+        "sensitivity": {"enum": ["public", "internal", "private"]},
+        "public_reuse": {"type": "boolean"}
+      }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "slug"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "slug": {"type": "string", "minLength": 1}
+      }
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "slug", "observed_at"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "slug": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": ["string", "null"], "format": "date-time"},
+        "superseded_by": {"$ref": "#/$defs/identity"}
+      }
+    },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "destination", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "destination": {"enum": ["private", "internal", "public"]},
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/identity"}
+        }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "items", "claims"],
+      "properties": {
+        "sources": {"type": "array", "items": {"$ref": "#/$defs/source"}},
+        "items": {"type": "array", "items": {"$ref": "#/$defs/item"}},
+        "claims": {"type": "array", "items": {"$ref": "#/$defs/claim"}}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "expected_valid", "expected_codes", "contract"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "expected_valid": {"type": "boolean"},
+        "expected_codes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "contract": {}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"expected_valid": {"const": true}},
+            "required": ["expected_valid"]
+          },
+          "then": {
+            "properties": {"contract": {"$ref": "#/$defs/contract"}}
+          }
+        }
+      ]
+    }
+  }
+}

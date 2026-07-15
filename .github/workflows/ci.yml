@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run project gate
+        run: make check
+      - name: Build wheel
+        run: python -m pip wheel --no-deps --wheel-dir /tmp/wheels .
+      - name: Smoke installed entry points
+        run: |
+          python -m venv /tmp/contract-smoke
+          /tmp/contract-smoke/bin/python -m pip install --no-deps /tmp/wheels/*.whl
+          /tmp/contract-smoke/bin/knowledge-contract-lint fixtures/ingestion_policy_cases.json
+          /tmp/contract-smoke/bin/active-memory-boundary fixtures/active_memory_boundary_cases.json

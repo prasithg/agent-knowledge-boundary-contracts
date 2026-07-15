@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "cases": [
+    {
+      "name": "no separator",
+      "input": "<active-memory>\nfact: synthetic\n</active-memory>\nSENTINEL: retain me\nsecond line\n",
+      "expected": "SENTINEL: retain me\nsecond line\n"
+    },
+    {
+      "name": "three separators",
+      "input": "<active-memory>\nfact: synthetic\n</active-memory>\n\n\n\nSENTINEL: retain me\nsecond line\n",
+      "expected": "SENTINEL: retain me\nsecond line\n"
+    },
+    {
+      "name": "crlf separator",
+      "input": "<active-memory>\r\nfact: synthetic\r\n</active-memory>\r\n\r\nSENTINEL: retain me\r\nsecond line\r\n",
+      "expected": "SENTINEL: retain me\r\nsecond line\r\n"
+    },
+    {
+      "name": "non-leading lookalike",
+      "input": "user preface\n<active-memory>\nfact: synthetic\n</active-memory>\n",
+      "expected": "user preface\n<active-memory>\nfact: synthetic\n</active-memory>\n"
+    },
+    {
+      "name": "unterminated block",
+      "input": "<active-memory>\nfact: synthetic\nSENTINEL: retain me\n",
+      "expected": "<active-memory>\nfact: synthetic\nSENTINEL: retain me\n"
+    }
+  ]
+}

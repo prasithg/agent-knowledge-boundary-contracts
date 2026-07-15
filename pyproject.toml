@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-knowledge-boundary-contracts"
+version = "0.1.0"
+description = "Portable conformance fixtures for identity, freshness, export, and prompt-boundary preservation"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "Prasith Govin"}]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+keywords = ["agents", "conformance", "knowledge", "memory", "provenance"]
+
+[project.urls]
+Repository = "https://github.com/prasithg/agent-knowledge-boundary-contracts"
+Issues = "https://github.com/prasithg/agent-knowledge-boundary-contracts/issues"
+
+[project.scripts]
+knowledge-contract-lint = "knowledge_ingestion_contracts:main"
+active-memory-boundary = "active_memory_boundary:main"
+
+[tool.setuptools]
+py-modules = ["knowledge_ingestion_contracts", "active_memory_boundary"]

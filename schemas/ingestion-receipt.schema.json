@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/prasithg/agent-knowledge-boundary-contracts/schemas/ingestion-receipt.schema.json",
+  "title": "Agent knowledge ingestion policy receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "passed", "matched", "total", "results"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "passed": {"type": "boolean"},
+    "matched": {"type": "integer", "minimum": 0},
+    "total": {"type": "integer", "minimum": 0},
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "matched", "actual_valid", "actual_codes", "expected_valid", "expected_codes", "violations"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "matched": {"type": "boolean"},
+          "actual_valid": {"type": "boolean"},
+          "actual_codes": {"type": "array", "items": {"type": "string"}},
+          "expected_valid": {"type": "boolean"},
+          "expected_codes": {"type": "array", "items": {"type": "string"}},
+          "violations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "path", "message"],
+              "properties": {
+                "code": {"type": "string", "minLength": 1},
+                "path": {"type": "string", "minLength": 1},
+                "message": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

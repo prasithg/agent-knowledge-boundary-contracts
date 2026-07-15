@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/prasithg/agent-knowledge-boundary-contracts/schemas/active-memory-boundary.schema.json",
+  "title": "Active-memory boundary preservation fixture bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "cases"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "input", "expected"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "input": {"type": "string"},
+          "expected": {"type": "string"}
+        }
+      }
+    }
+  }
+}
